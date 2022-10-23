@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
+    <title>test</title>
+    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="src/web3.min.js"></script>
+    <script language="javascript" type="text/javascript" src="src/anon_abi.js"></script>
+	<script language="javascript" type="text/javascript" src="src/main.js"></script>
+	<link rel="stylesheet" href="style.css">
+  </head>
+<body>
+<div id="main">
+ <div id="header">
+  <div id="h-top">top</div>
+  <div id="h-statistics"><div class="st-l">успешных перемешиваний<br>отменённых перемешиваний</div><div class="st-r">текущий кошелёк (в отправке, в получении, не участвует)<br>текущие опции<br>запланированные опции</div></div>
+ </div>
+ <div id="middle">
+  <div id="m-working-area">
+   <table><tr>
+    <td id="m-t1"><div class="mt-head">кошельки для списания</div><div class="mt-stat">зарегистрировано участников (из … необходимых)<br>дата последней отправки денег для перемешивания</div><div class="mt-hfunc">отправить средства для перемешивания<br>забрать свои средства</div></td>
+    <td id="m-t2"><div class="mt-head">кошельки для получения</div><div class="mt-stat">зарегистрировано получателей (из … необходимых)<br>дата отправки последнего кошелька для получения</div><div class="mt-hfunc">отправить кошелёк для получения</div></td>
+    <td id="m-t3"><div class="mt-head">подтверждение отправки кошелька для получения</div><div class="mt-stat">подтверждено кошельков для получения<br>период подтверждения<br>начало периода<br>окончание периода</div><div class="mt-hfunc">запросить список всех кошельков для получения (проверить есть ли там свой)<br>отправить подтверждение что кошелёк получения отправлен</div></td>
+   </tr></table>
+  </div>
+  <div id="m-mes">сообщение от владельца</div>
+  <div id="m-log">лог операций</div>
+ </div>
+ <div id="footer">
+  <div id="f-manual">инструкция</div>
+  <div id="f-bottom">bottom</div>
+ </div>
+</div>
+
+
+
+
+    <div id="txStatus">111</div><a href="#" onclick="getState()">getState</a>
+    <div id="zombies">222</div>
+    <div id="txStatus2">333</div><a href="#" onclick="sendMessage()">sendMessage</a>
+    <div id="zombies2">444</div>
+	
+	
+	
+</body>
+</html>
+
+
+

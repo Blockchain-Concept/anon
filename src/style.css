@@ -1,0 +1,20 @@
+div{border:1px solid #333;}
+#main{}
+#header{}
+#h-top{}
+#h-statistics{}
+#middle{}
+#m-t1{height: 200px;width: 33%;background-color:#fbead5;}
+#m-t2{height: 200px;width: 33%;background-color: #d5e7fb;}
+#m-t3{height: 200px;width: 33%;background-color: #e4fbd5;}
+#m-mes{height: 200px;background-color:#eaeceb;}
+#m-log{height: 200px;background-color:#eaeceb;}
+#footer{}
+#f-manual{}
+#f-bottom{}
+.st-l{}
+.st-r{}
+.mt-head{height:30px;font-size: 21px;font-weight:bold;}
+.mt-stat{height:100px;}
+.mt-hfunc{height:50px;}
+#middle td{padding:25px;vertical-align:top}
