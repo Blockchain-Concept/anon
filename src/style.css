@@ -2,19 +2,31 @@ div{border:1px solid #333;}
 #main{}
 #header{}
 #h-top{}
-#h-statistics{}
+#h-statistics{float:none;height:200px;padding:20px;margin:0 auto;max-width:900px;font-size: 12px;}
+#curWallet{text-align:right;font-style: italic;font-weight: bold;font-size: 14px;}
+#stepTimeLeft{text-align:right;font-style:italic;font-weight: bold;font-size: 14px;}
 #middle{}
-#m-t1{height: 200px;width: 33%;background-color:#fbead5;}
-#m-t2{height: 200px;width: 33%;background-color: #d5e7fb;}
-#m-t3{height: 200px;width: 33%;background-color: #e4fbd5;}
-#m-mes{height: 200px;background-color:#eaeceb;}
-#m-log{height: 200px;background-color:#eaeceb;}
+#m-working-area{float:none;height:350px;padding:20px;margin:0 auto;max-width:900px;}
+#m-t1{float:left;width:250px;height:300px;background-color:#fbead5;margin:20px 20px 20px 35px;}
+#m-t2{float:left;width:250px;height:300px;background-color: #d5e7fb;margin:20px;}
+#m-t3{float:left;width:250px;height:300px;background-color: #e4fbd5;margin:20px;}
+#m-mes{height: 200px;background-color:#eaeceb;max-width: 900px;margin: 0 auto;padding: 20px;}
+#m-mes-body{overflow: scroll;height: 145px;background-color:#ccc;max-width: 850px;margin: 0 auto;padding: 20px;}
+#m-log{height: 200px;background-color:#eaeceb;max-width: 900px;margin: 0 auto;padding: 20px;}
+#m-log-body{overflow: scroll;height: 145px;background-color:#ccc;max-width: 850px;margin: 0 auto;padding: 20px;}
 #footer{}
 #f-manual{}
 #f-bottom{}
-.st-l{}
-.st-r{}
-.mt-head{height:30px;font-size: 21px;font-weight:bold;}
-.mt-stat{height:100px;}
-.mt-hfunc{height:50px;}
-#middle td{padding:25px;vertical-align:top}
+.st-l{float:right;padding:0 20px;margin:0 10px;max-width:400px}
+.st-l div {padding:5px;}
+.st-r{float:right;width:450px}
+.st-r table {width: 100%;border-collapse: collapse;}
+.st-r table tr:nth-child(even){background: #f0f0f0;}
+.st-r table tr th{}
+.st-r table tr .th1{background: #f5e8d0;}
+.st-r table tr .th2{background: #f5e8d0;}
+.st-r table tr .th3{background: #f5e8d0;}
+.st-r table tr td{padding: 5px;border: 1px solid #ccc;}
+.mt-head{font-size: 21px;font-weight:bold;margin:10px}
+.mt-stat{margin:10px}
+.mt-hfunc{margin:10px}

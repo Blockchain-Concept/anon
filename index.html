@@ -7,27 +7,45 @@
     <script language="javascript" type="text/javascript" src="src/web3.min.js"></script>
     <script language="javascript" type="text/javascript" src="src/anon_abi.js"></script>
 	<script language="javascript" type="text/javascript" src="src/main.js"></script>
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="src/style.css">
   </head>
 <body>
 <div id="main">
  <div id="header">
-  <div id="h-top">top</div>
-  <div id="h-statistics"><div class="st-l">успешных перемешиваний<br>отменённых перемешиваний</div><div class="st-r">текущий кошелёк (в отправке, в получении, не участвует)<br>текущие опции<br>запланированные опции</div></div>
+  <div id="h-top"><div id="success">успешных перемешиваний</div><div id="rollBack">отменённых перемешиваний</div><div id="switchOnTime">сервис запущен в ... дата ...</div></div>
+  <div id="h-statistics">
+	<div class="st-r">
+		<table>
+			<tr><th class="th1">Настройки</th><th class="th2">Текущие</th><th class="th3">Плановые</th></tr>
+			<tr><td>Длительность этапа</td><td id="stateWaitIntervalTime"></td><td id="stateWaitIntervalTime_plan"></td></tr>
+			<tr><td>Сумма для перемешивания</td><td id="mixingQuantity"></td><td id="mixingQuantity_plan"></td></tr>
+			<tr><td>Комиссиионный сбор</td><td id="ownerRewardValue"></td><td id="ownerRewardValue_plan"></td></tr>
+			<tr><td>Комиссия за операцию проверки статуса</td><td id="stateCheckCommision"></td><td id="stateCheckCommision_plan"></td></tr>
+			<tr><td>Необходимое количество участников</td><td id="pullSize"></td><td id="pullSize_plan"></td></tr>
+			<tr><td>Дата последнего изменения настроек</td><td id="changedDate"></td><td id="changedDate_plan"></td></tr>
+		</table>
+	</div>
+	<div class="st-l">
+	<div class="st-l1">текущий кошелёк (в отправке, в получении, не участвует)</div><div id="curWallet">1212йыу2132ы213фыы</div>
+	<div class="st-l2">осталось времени до окончания эапа</div><div id="stepTimeLeft">31.12.9999</div>
+	</div>
+  </div>
  </div>
  <div id="middle">
   <div id="m-working-area">
-   <table><tr>
-    <td id="m-t1"><div class="mt-head">кошельки для списания</div><div class="mt-stat">зарегистрировано участников (из … необходимых)<br>дата последней отправки денег для перемешивания</div><div class="mt-hfunc">отправить средства для перемешивания<br>забрать свои средства</div></td>
-    <td id="m-t2"><div class="mt-head">кошельки для получения</div><div class="mt-stat">зарегистрировано получателей (из … необходимых)<br>дата отправки последнего кошелька для получения</div><div class="mt-hfunc">отправить кошелёк для получения</div></td>
-    <td id="m-t3"><div class="mt-head">подтверждение отправки кошелька для получения</div><div class="mt-stat">подтверждено кошельков для получения<br>период подтверждения<br>начало периода<br>окончание периода</div><div class="mt-hfunc">запросить список всех кошельков для получения (проверить есть ли там свой)<br>отправить подтверждение что кошелёк получения отправлен</div></td>
-   </tr></table>
+    <div id="m-t1"><div class="mt-head">кошельки для списания</div><div class="mt-stat">зарегистрировано участников (из … необходимых)<br>дата последней отправки денег для перемешивания</div><div class="mt-hfunc">отправить средства для перемешивания<br>забрать свои средства</div></div>
+    <div id="m-t2"><div class="mt-head">кошельки для получения</div><div class="mt-stat">зарегистрировано получателей (из … необходимых)<br>дата отправки последнего кошелька для получения</div><div class="mt-hfunc">отправить кошелёк для получения</div></div>
+    <div id="m-t3"><div class="mt-head">подтверждение отправки кошелька для получения</div><div class="mt-stat">подтверждено кошельков для получения<br>период подтверждения<br>начало периода<br>окончание периода</div><div class="mt-hfunc">запросить список всех кошельков для получения (проверить есть ли там свой)<br>отправить подтверждение что кошелёк получения отправлен</div></div>
   </div>
-  <div id="m-mes">сообщение от владельца</div>
-  <div id="m-log">лог операций</div>
+  <div id="m-mes">сообщение от владельца<div id="m-mes-body"></div></div>
+  <div id="m-log">лог операций<div id="m-log-body"></div></div>
  </div>
  <div id="footer">
-  <div id="f-manual">инструкция</div>
+  <div id="f-manual">инструкция
+	<div class="txt">
+		описать, как пользоваться инструментом		
+	</div>
+  </div>
   <div id="f-bottom">bottom</div>
  </div>
 </div>
@@ -44,6 +62,7 @@
 	
 </body>
 </html>
+
 
 
 

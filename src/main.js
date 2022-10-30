@@ -1,5 +1,22 @@
- var web3js;
- var anonimizer;
+ var web3js, anonimizer, _allSuccess, _allRollback, _birthdayService;
+ var _optionsActual = { 
+        stateWaitIntervalTime:0, // = 1 days // 30мин и < 48 часов // время, которое даётся на отправку всеми участниками адресов для получения и подтверждений об отправке этих адресов (можно: seconds, minutes, hours, days, weeks and years)sendRecipient
+        mixingQuantity:0, // = 1 эфир //размер перемешиваемого значения. Т.е. сумма, которая будет отправляться и получаться на кошельки участников
+        ownerRewardValue:0, // размер комиссии - % от mixingQuantity, которую платят с кошелька получения и которую забирает владелец смартконтракта и сам смарт контракт на отправку по итоговым адресам (получателям или возврат отправителям). Если газ превысит комиссию то он вычитается из анонимизируемой единицы эфира
+        stateCheckCommision:0, // маленькая плата за проверку и смену текущего статуса. для начала будет почти нулевой. Если будут проблемы - можно сделать очень большой
+        pullSize:"", // = 10; //количество адресов для перемешивания        
+        changedDate:0, // дата и время последнего изменения
+        needToActualize:0, // признак были ли использованы текущие плановые данные для изменения актуальных, или нет. false - настройки актуальны. true - запланировано изменение настроек и требуется актуализация
+ };
+ var _optionsPlanning = { 
+        stateWaitIntervalTime:"", // = 1 days // 30мин и < 48 часов // время, которое даётся на отправку всеми участниками адресов для получения и подтверждений об отправке этих адресов (можно: seconds, minutes, hours, days, weeks and years)sendRecipient
+        mixingQuantity:"", // = 1 эфир //размер перемешиваемого значения. Т.е. сумма, которая будет отправляться и получаться на кошельки участников
+        ownerRewardValue:"", // размер комиссии - % от mixingQuantity, которую платят с кошелька получения и которую забирает владелец смартконтракта и сам смарт контракт на отправку по итоговым адресам (получателям или возврат отправителям). Если газ превысит комиссию то он вычитается из анонимизируемой единицы эфира
+        stateCheckCommision:"", // маленькая плата за проверку и смену текущего статуса. для начала будет почти нулевой. Если будут проблемы - можно сделать очень большой
+        pullSize:"", // = 10; //количество адресов для перемешивания        
+        changedDate:"", // дата и время последнего изменения
+        needToActualize:0, // признак были ли использованы текущие плановые данные для изменения актуальных, или нет. false - настройки актуальны. true - запланировано изменение настроек и требуется актуализация
+ };
 // *********************************************** //
 // ********* основная функциональность *********** //
 // *********************************************** //
@@ -77,21 +94,103 @@ function checkLostTransfer(){
 	anonimizer.methods.lostTransfersCheck().call().then((value) => {_isLostTransfer = value;}, (errorReason) => {});
 	return _isLostTransfer;
 }
-// *****************************окончание** //
+function getAllSuccess(){
+	var _amount;
+	anonimizer.methods.allSuccess().call().then((value) => {document.getElementById('success').innerText = value;_allSuccess =  value;}, (errorReason) => {});
+	return _amount;
+}
+function getAllRollback(){
+	var _amount;
+	anonimizer.methods.allRollback().call().then((value) => {document.getElementById('rollBack').innerText = value;_allRollback =  value;}, (errorReason) => {});
+	return _amount;
+}
+function getbirthdayService(){
+	var _amount;
+	anonimizer.methods.birthdayService().call().then((value) => {document.getElementById('switchOnTime').innerText = convertDateToNormal(value);_birthdayService =  value;}, (errorReason) => {});
+	return _amount;
+}
+function getAllOptions(){///////получение всех настроек сервиса (текущих и плановых)
+//	anonimizer.methods.optionsActual().call().then((value) => {_optionsActual = value; optionsUpdate();}, (errorReason) => {});
+	anonimizer.methods.optionsActual().call().then((value) => {
+		_optionsActual = value; 
+		if (_optionsActual.needToActualize){
+			anonimizer.methods.optionsPlanning().call().then((value) => {_optionsPlanning = value; optionsUpdate();}, (errorReason) => {});
+		} else{
+			optionsUpdate();
+		}	
+	}, (errorReason) => {});
+}
+// *****************************окончание** // 
 // ********* функции статистики *********** //
 // **************************************** //
  
+// **************************************** // 
+// ********* вспомогательные функции******* //
+// *****************************начало***** //
+///////получение даты разворачивания смартконтракта
+function convertDateToNormal(_timestamp){
+	if (_timestamp != 0){
+		const date = new Date(_timestamp * 1000);
+		var _month = date.getMonth()+1;
+		var _dateVal = date.getDate() + '.' + _month + '.' + date.getFullYear();
+		return _dateVal;
+	} else{
+		return "";
+	}
+} 
+function optionsUpdate(){/////// перерисовка начитанных настроек смартконтракта
+	document.getElementById('stateWaitIntervalTime').innerText = _optionsActual.stateWaitIntervalTime;
+	document.getElementById('mixingQuantity').innerText = _optionsActual.mixingQuantity;
+	document.getElementById('ownerRewardValue').innerText = _optionsActual.ownerRewardValue;
+	document.getElementById('stateCheckCommision').innerText = _optionsActual.stateCheckCommision;
+	document.getElementById('pullSize').innerText = _optionsActual.pullSize;
+	document.getElementById('changedDate').innerText = convertDateToNormal(_optionsActual.changedDate);
+
+	document.getElementById('stateWaitIntervalTime_plan').innerText = _optionsPlanning.stateWaitIntervalTime;
+	document.getElementById('mixingQuantity_plan').innerText = _optionsPlanning.mixingQuantity;
+	document.getElementById('ownerRewardValue_plan').innerText = _optionsPlanning.ownerRewardValue;
+	document.getElementById('stateCheckCommision_plan').innerText = _optionsPlanning.stateCheckCommision;
+	document.getElementById('pullSize_plan').innerText = _optionsPlanning.pullSize;
+	document.getElementById('changedDate_plan').innerText = convertDateToNormal(_optionsPlanning.changedDate);
+}
+///////
+///////
+///////
+///////
+///////
+
+
+
+
+
+// *****************************окончание** // 
+// ********* вспомогательные функции******* //
+// **************************************** //    
  
- 
-
-
-
-
-
-
+// **************************************** //
+// основная функциональность //
+// **************************************** //
  function startApp(){
-   var anonimizerAddress = "0xeF7adBD3Fc5D1377c4A9C4005850e06c6A368BFB";
+   var anonimizerAddress = "0x80Fa4E68804d5c0e52ccCed7FbB59EF4102b0f53";
    anonimizer = new web3js.eth.Contract(anonABI, anonimizerAddress);
+
+
+	getAllOptions();
+   getAllSuccess();
+   getAllRollback();
+   getbirthdayService();   
+//   document.getElementById('success').innerText = _allSuccess;
+//   document.getElementById('rollBack').innerText = _allRollback;
+//   cument.getElementById('switchOnTime').innerText = _birthdayService;
+   
+   
+
+   
+   
+   
+   
+   
+   
  }
  function getState() { 
     //document.getElementById('zombies').innerText =  await anonimizer.methods.state().call().toString();
