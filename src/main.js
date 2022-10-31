@@ -120,6 +120,18 @@ function getAllOptions(){///////получение всех настроек с�
 		}	
 	}, (errorReason) => {});
 }
+async function getActiveWallet(){///////получение активного кошелька в метамаск
+let myBalanceWei;
+let balance;
+    await window.ethereum.enable();
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const account = accounts[0];
+    await web3js.eth.getBalance(account).then(bal => balance = bal);
+	balance = web3js.utils.fromWei(balance, 'ether');
+	balance = Math.round(balance*100)/100;
+    document.getElementById('curWallet').innerHTML = account + " <br>( " + balance + ' ETH )';
+    window.ethereum.on('accountsChanged', function (accounts) { document.getElementById('curWallet').innerText = account; });
+}	
 // *****************************окончание** // 
 // ********* функции статистики *********** //
 // **************************************** //
@@ -138,28 +150,66 @@ function convertDateToNormal(_timestamp){
 		return "";
 	}
 } 
-function optionsUpdate(){/////// перерисовка начитанных настроек смартконтракта
-	document.getElementById('stateWaitIntervalTime').innerText = _optionsActual.stateWaitIntervalTime;
-	document.getElementById('mixingQuantity').innerText = _optionsActual.mixingQuantity;
-	document.getElementById('ownerRewardValue').innerText = _optionsActual.ownerRewardValue;
-	document.getElementById('stateCheckCommision').innerText = _optionsActual.stateCheckCommision;
+/////// перерисовка начитанных настроек смартконтракта
+function optionsUpdate(){
+	document.getElementById('stateWaitIntervalTime').innerText = timeDiff(0, _optionsActual.stateWaitIntervalTime, "hours");
+	document.getElementById('mixingQuantity').innerText = web3js.utils.fromWei(_optionsActual.mixingQuantity, 'ether');
+	document.getElementById('ownerRewardValue').innerText = web3js.utils.fromWei(_optionsActual.ownerRewardValue, 'ether');
+	document.getElementById('stateCheckCommision').innerText = web3js.utils.fromWei(_optionsActual.stateCheckCommision, 'ether');
 	document.getElementById('pullSize').innerText = _optionsActual.pullSize;
 	document.getElementById('changedDate').innerText = convertDateToNormal(_optionsActual.changedDate);
 
-	document.getElementById('stateWaitIntervalTime_plan').innerText = _optionsPlanning.stateWaitIntervalTime;
-	document.getElementById('mixingQuantity_plan').innerText = _optionsPlanning.mixingQuantity;
-	document.getElementById('ownerRewardValue_plan').innerText = _optionsPlanning.ownerRewardValue;
-	document.getElementById('stateCheckCommision_plan').innerText = _optionsPlanning.stateCheckCommision;
+	document.getElementById('stateWaitIntervalTime_plan').innerText = timeDiff(0, _optionsPlanning.stateWaitIntervalTime, "hours");
+	document.getElementById('mixingQuantity_plan').innerText = web3js.utils.fromWei(_optionsPlanning.mixingQuantity, 'ether');
+	document.getElementById('ownerRewardValue_plan').innerText = web3js.utils.fromWei(_optionsPlanning.ownerRewardValue, 'ether');
+	document.getElementById('stateCheckCommision_plan').innerText = web3js.utils.fromWei(_optionsPlanning.stateCheckCommision, 'ether');
 	document.getElementById('pullSize_plan').innerText = _optionsPlanning.pullSize;
 	document.getElementById('changedDate_plan').innerText = convertDateToNormal(_optionsPlanning.changedDate);
+}
+/////// получение по разнице дат в миллисекундах полных значений в нормальных ед измерения (днях, часах и т.д.). date2 > date1; interval - одно из: years, months, weeks, days, hours, minutes, seconds
+function timeDiff(_date1,_date2,_interval) {
+    let second=1, minute=second*60, hour=minute*60, day=hour*24, week=day*7;
+    let date1 = new Date(_date1);
+    let date2 = new Date(_date2);
+    //let timediff = date2 - date1;
+	let timediff = _date2 - _date1;
+    if (isNaN(timediff)){return NaN};
+    switch (_interval) {
+        case "years": return date2.getFullYear() - date1.getFullYear();
+        case "months": return (( date2.getFullYear() * 12 + date2.getMonth() ) - ( date1.getFullYear() * 12 + date1.getMonth() ));
+        case "weeks"  : return Math.floor(timediff / week);
+        case "days"   : return Math.floor(timediff / day); 
+        case "hours"  : return Math.floor(timediff / hour); 
+        case "minutes": return Math.floor(timediff / minute);
+        case "seconds": return Math.floor(timediff / second);
+        default: return undefined;
+    }
+}
+/////// получение читабельной строки по разнице дат в милли секундах
+function timeDiffString(_date) {
+	let _str, _y, _m, _w, _d, _h, _s;
+    let date1 = new Date(0);
+    let date2 = new Date(_date);	
+	let timediff = date2 - date1;
+	let second=1000, minute=second*60, hour=minute*60, day=hour*24, week=day*7;
+    _y = date2.getFullYear() - date1.getFullYear();
+	_m = ( date2.getFullYear() * 12 + date2.getMonth() ) - ( date1.getFullYear() * 12 + date1.getMonth()) - _y * 12;
+	_ms= Math.ceil(timediff % 1000),
+	_s = Math.ceil(timediff / 1000 % 60),
+	_m = Math.ceil(timediff / 60000 % 60),
+	_h = Math.ceil(timediff / 3600000 % 24),
+	_d = Math.ceil(timediff / 86400000)
+	if (_d > 0){_str = _d + 'д.'};
+	if (_h > 0){_str = ' ' + _h + 'ч.'};
+	if (_m > 0){_str = ' ' + _m + 'мин.'};
+	if (_s > 0){_str = ' ' + _s + 'сек.'};
+	_str = 'осталось: ' + _str;
+return _str;
 }
 ///////
 ///////
 ///////
 ///////
-///////
-
-
 
 
 
@@ -175,10 +225,11 @@ function optionsUpdate(){/////// перерисовка начитанных н�
    anonimizer = new web3js.eth.Contract(anonABI, anonimizerAddress);
 
 
-	getAllOptions();
+   getAllOptions();
    getAllSuccess();
    getAllRollback();
-   getbirthdayService();   
+   getbirthdayService();
+   getActiveWallet();   
 //   document.getElementById('success').innerText = _allSuccess;
 //   document.getElementById('rollBack').innerText = _allRollback;
 //   cument.getElementById('switchOnTime').innerText = _birthdayService;
