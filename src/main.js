@@ -109,7 +109,8 @@ function getbirthdayService(){
 	anonimizer.methods.birthdayService().call().then((value) => {document.getElementById('switchOnTime').innerText = convertDateToNormal(value);_birthdayService =  value;}, (errorReason) => {});
 	return _amount;
 }
-function getAllOptions(){///////получение всех настроек сервиса (текущих и плановых)
+///////получение всех настроек сервиса (текущих и плановых)
+function getAllOptions(){
 //	anonimizer.methods.optionsActual().call().then((value) => {_optionsActual = value; optionsUpdate();}, (errorReason) => {});
 	anonimizer.methods.optionsActual().call().then((value) => {
 		_optionsActual = value; 
@@ -120,7 +121,8 @@ function getAllOptions(){///////получение всех настроек с�
 		}	
 	}, (errorReason) => {});
 }
-async function getActiveWallet(){///////получение активного кошелька в метамаск
+///////получение активного кошелька в метамаск
+async function getActiveWallet(){
 let myBalanceWei;
 let balance;
     await window.ethereum.enable();
@@ -132,6 +134,24 @@ let balance;
     document.getElementById('curWallet').innerHTML = account + " <br>( " + balance + ' ETH )';
     window.ethereum.on('accountsChanged', function (accounts) { document.getElementById('curWallet').innerText = account; });
 }	
+function getState() { 
+	anonimizer.methods.state().call().then((value) => {document.getElementById('step').innerText = value}, (errorReason) => {});
+	return false;
+ }	
+function sendMessage() { 
+	anonimizer.methods.ownersMessages(1).call().then((value) => {alert(value);}, (errorReason) => {alert('333');});
+return false;
+ }
+
+
+
+
+
+
+
+
+
+
 // *****************************окончание** // 
 // ********* функции статистики *********** //
 // **************************************** //
@@ -158,13 +178,21 @@ function optionsUpdate(){
 	document.getElementById('stateCheckCommision').innerText = web3js.utils.fromWei(_optionsActual.stateCheckCommision, 'ether');
 	document.getElementById('pullSize').innerText = _optionsActual.pullSize;
 	document.getElementById('changedDate').innerText = convertDateToNormal(_optionsActual.changedDate);
-
-	document.getElementById('stateWaitIntervalTime_plan').innerText = timeDiff(0, _optionsPlanning.stateWaitIntervalTime, "hours");
-	document.getElementById('mixingQuantity_plan').innerText = web3js.utils.fromWei(_optionsPlanning.mixingQuantity, 'ether');
-	document.getElementById('ownerRewardValue_plan').innerText = web3js.utils.fromWei(_optionsPlanning.ownerRewardValue, 'ether');
-	document.getElementById('stateCheckCommision_plan').innerText = web3js.utils.fromWei(_optionsPlanning.stateCheckCommision, 'ether');
-	document.getElementById('pullSize_plan').innerText = _optionsPlanning.pullSize;
-	document.getElementById('changedDate_plan').innerText = convertDateToNormal(_optionsPlanning.changedDate);
+	if ( _optionsActual.needToActualize == true){
+		document.getElementById('stateWaitIntervalTime_plan').innerText = timeDiff(0, _optionsPlanning.stateWaitIntervalTime, "hours");
+		document.getElementById('mixingQuantity_plan').innerText = web3js.utils.fromWei(_optionsPlanning.mixingQuantity, 'ether');
+		document.getElementById('ownerRewardValue_plan').innerText = web3js.utils.fromWei(_optionsPlanning.ownerRewardValue, 'ether');
+		document.getElementById('stateCheckCommision_plan').innerText = web3js.utils.fromWei(_optionsPlanning.stateCheckCommision, 'ether');
+		document.getElementById('pullSize_plan').innerText = _optionsPlanning.pullSize;
+		document.getElementById('changedDate_plan').innerText = convertDateToNormal(_optionsPlanning.changedDate);
+	}else{
+		document.getElementById('stateWaitIntervalTime_plan').innerText = "";
+		document.getElementById('mixingQuantity_plan').innerText = "";
+		document.getElementById('ownerRewardValue_plan').innerText = "";
+		document.getElementById('stateCheckCommision_plan').innerText = "";
+		document.getElementById('pullSize_plan').innerText = "";
+		document.getElementById('changedDate_plan').innerText ="";
+	}	
 }
 /////// получение по разнице дат в миллисекундах полных значений в нормальных ед измерения (днях, часах и т.д.). date2 > date1; interval - одно из: years, months, weeks, days, hours, minutes, seconds
 function timeDiff(_date1,_date2,_interval) {
@@ -221,18 +249,14 @@ return _str;
 // основная функциональность //
 // **************************************** //
  function startApp(){
-   var anonimizerAddress = "0x80Fa4E68804d5c0e52ccCed7FbB59EF4102b0f53";
-   anonimizer = new web3js.eth.Contract(anonABI, anonimizerAddress);
-
-
-   getAllOptions();
-   getAllSuccess();
-   getAllRollback();
-   getbirthdayService();
-   getActiveWallet();   
-//   document.getElementById('success').innerText = _allSuccess;
-//   document.getElementById('rollBack').innerText = _allRollback;
-//   cument.getElementById('switchOnTime').innerText = _birthdayService;
+	var anonimizerAddress = "0x80Fa4E68804d5c0e52ccCed7FbB59EF4102b0f53";
+	anonimizer = new web3js.eth.Contract(anonABI, anonimizerAddress);
+	getAllOptions();
+	getAllSuccess();
+	getAllRollback();
+	getbirthdayService();
+	getActiveWallet();   
+	getState();
    
    
 
@@ -243,24 +267,6 @@ return _str;
    
    
  }
- function getState() { 
-    //document.getElementById('zombies').innerText =  await anonimizer.methods.state().call().toString();
-	alert('000');
-   //return anonimizer.methods.state.call()
-anonimizer.methods.state().call().then((value) => {
-	document.getElementById('zombies').innerText = value;
-}, (errorReason) => {
-});
-	return false;
- }	
- function sendMessage() { 
-anonimizer.methods.ownersMessages(1).call().then((value) => {
-	document.getElementById('zombies2').innerText = value;
-}, (errorReason) => {
-	alert('333');
-});
-return false;
- }		  
  window.addEventListener('load', function() {
   if (typeof web3 !== 'undefined') {
    web3js = new Web3(web3.currentProvider);		                 // MetaMask
