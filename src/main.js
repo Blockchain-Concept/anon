@@ -137,14 +137,31 @@ let balance;
 function getState() { 
 	anonimizer.methods.state().call().then((value) => {document.getElementById('step').innerText = value}, (errorReason) => {});
 	return false;
- }	
+}	
 function sendMessage() { 
 	anonimizer.methods.ownersMessages(1).call().then((value) => {alert(value);}, (errorReason) => {alert('333');});
 return false;
- }
-
-
-
+}
+////////чтение событий
+function getLog(){
+var event = anonimizer.optionsChanged(function(error, result){
+    for(let key in result){
+		document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + result[key] + "<br>"
+    }
+});	
+	
+	
+	
+// stateChanged
+// moneySentSuccessfully
+// moneyRollback
+// optionsChanged
+// addItemToList
+// remItemFromMembersList
+// служебные функции	
+//	anonimizer.events.
+//	myContract.events.MyEvent({ fromBlock: 0, })
+}
 
 
 
@@ -257,7 +274,7 @@ return _str;
 	getbirthdayService();
 	getActiveWallet();   
 	getState();
-   
+	getLog();
    
 
    
