@@ -144,11 +144,29 @@ return false;
 }
 ////////чтение событий
 function getLog(){
-var event = anonimizer.optionsChanged(function(error, result){
-    for(let key in result){
-		document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + result[key] + "<br>"
-    }
-});	
+	let options = {
+    filter: {},
+    fromBlock: 0,                  //Number || "earliest" || "pending" || "latest"
+    toBlock: 'latest'
+	};
+anonimizer.getPastEvents('optionsChanged', options).then((value) => {
+		//document.getElementById('m-log-body').innerHTML = value; 
+		console.log(value);
+	    for(let key in value){
+			document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + convertDateTimeToNormal(value[key].returnValues[1]) + ' - ' + value[key].returnValues[0] + "<br>"
+		}		
+		}, (errorReason) => {});
+
+	
+
+	
+	
+	
+//var event = anonimizer.event.optionsChanged(function(error, result){
+//    for(let key in result){
+//		document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + result[key] + "<br>"
+//    }
+//});	
 	
 	
 	
@@ -187,6 +205,17 @@ function convertDateToNormal(_timestamp){
 		return "";
 	}
 } 
+///////получение даты и времени разворачивания смартконтракта
+function convertDateTimeToNormal(_timestamp){
+	if (_timestamp != 0){
+		const date = new Date(_timestamp * 1000);
+		var _month = date.getMonth()+1;
+		var _dateVal = date.getDate() + '.' + _month + '.' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+		return _dateVal;
+	} else{
+		return "";
+	}
+} 
 /////// перерисовка начитанных настроек смартконтракта
 function optionsUpdate(){
 	document.getElementById('stateWaitIntervalTime').innerText = timeDiff(0, _optionsActual.stateWaitIntervalTime, "hours");
@@ -195,7 +224,7 @@ function optionsUpdate(){
 	document.getElementById('stateCheckCommision').innerText = web3js.utils.fromWei(_optionsActual.stateCheckCommision, 'ether');
 	document.getElementById('pullSize').innerText = _optionsActual.pullSize;
 	document.getElementById('changedDate').innerText = convertDateToNormal(_optionsActual.changedDate);
-	if ( _optionsActual.needToActualize == true){
+	if ( _optionsPlanning.needToActualize == true){
 		document.getElementById('stateWaitIntervalTime_plan').innerText = timeDiff(0, _optionsPlanning.stateWaitIntervalTime, "hours");
 		document.getElementById('mixingQuantity_plan').innerText = web3js.utils.fromWei(_optionsPlanning.mixingQuantity, 'ether');
 		document.getElementById('ownerRewardValue_plan').innerText = web3js.utils.fromWei(_optionsPlanning.ownerRewardValue, 'ether');
