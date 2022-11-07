@@ -1,4 +1,5 @@
  var web3js, anonimizer, _allSuccess, _allRollback, _birthdayService;
+ var arrAllLog = new Map();  
  var _optionsActual = { 
         stateWaitIntervalTime:0, // = 1 days // 30мин и < 48 часов // время, которое даётся на отправку всеми участниками адресов для получения и подтверждений об отправке этих адресов (можно: seconds, minutes, hours, days, weeks and years)sendRecipient
         mixingQuantity:0, // = 1 эфир //размер перемешиваемого значения. Т.е. сумма, которая будет отправляться и получаться на кошельки участников
@@ -138,52 +139,76 @@ function getState() {
 	anonimizer.methods.state().call().then((value) => {document.getElementById('step').innerText = value}, (errorReason) => {});
 	return false;
 }	
-function sendMessage() { 
-	anonimizer.methods.ownersMessages(1).call().then((value) => {alert(value);}, (errorReason) => {alert('333');});
+function getMessages() { 
+	var _mesAmount;
+	anonimizer.methods.messageAmount().call().then((value) => {
+		for (let i=0; i< value; i++){
+			anonimizer.methods.ownersMessages(i).call().then((value2) => {
+				document.getElementById('m-mes-body').innerHTML = document.getElementById('m-mes-body').innerHTML + i + ") " +value2 + "<br>";
+				}, (errorReason2) => {alert('333');});
+		}		
+	}, (errorReason) => {});
 return false;
 }
-////////чтение событий
+////////чтение событий   
 function getLog(){
 	let options = {
-    filter: {},
-    fromBlock: 0,                  //Number || "earliest" || "pending" || "latest"
-    toBlock: 'latest'
+		filter: {},
+		fromBlock: 0,                  //Number || "earliest" || "pending" || "latest"
+		toBlock: 'latest'
 	};
-anonimizer.getPastEvents('optionsChanged', options).then((value) => {
-		//document.getElementById('m-log-body').innerHTML = value; 
-		console.log(value);
+//	event stateChanged(states _state, uint _timestamp); // генерируется при любом изменении статуса
+//	event moneySentSuccessfully(string _message, uint _timestamp); // генерируется если процесс дошёл до успешного завершения
+//	event moneyRollback(string _message, uint _timestamp); // генерируется если был саботаж и пришлось откатить весь обмен
+//	event optionsChanged(string _message, uint _timestamp); // генерируется при планировании и при актуализации изменения настроек смартконтракта
+//	event addItemToList(string _message, uint sendersAmount, uint _timestamp, states _state); // генерируется при добавлении адреса в массив отправителей, адреса в массив получателей, подтверждения (об отправке адреса для получения) в массив отправителей
+//	event remItemFromMembersList(string _message,  uint sendersAmount, uint _timestamp); // генерируется в ситуации, когда на первоначальном этапе участник решил забрать свои деньги и не участвовать в процессе анонимайзинга		
+
+	anonimizer.getPastEvents('stateChanged', options).then((value) => {
 	    for(let key in value){
-			document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + convertDateTimeToNormal(value[key].returnValues[1]) + ' - ' + value[key].returnValues[0] + "<br>"
-		}		
-		}, (errorReason) => {});
-
-	
-
-	
-	
-	
-//var event = anonimizer.event.optionsChanged(function(error, result){
-//    for(let key in result){
-//		document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + result[key] + "<br>"
-//    }
-//});	
-	
-	
-	
-// stateChanged
-// moneySentSuccessfully
-// moneyRollback
-// optionsChanged
-// addItemToList
-// remItemFromMembersList
-// служебные функции	
-//	anonimizer.events.
-//	myContract.events.MyEvent({ fromBlock: 0, })
+			//document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + convertDateTimeToNormal(value[key].returnValues[1]) + ' - ' + value[key].returnValues[0] + "<br>"
+			arrAllLog.set(value[key].returnValues[1], "stateChanged" + ': ' + value[key].returnValues[0]);
+		}
+		logRefresh();
+	}, (errorReason) => {});
+	anonimizer.getPastEvents('moneySentSuccessfully', options).then((value) => {
+	    for(let key2 in value){
+			//document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key2 + " : " + convertDateTimeToNormal(value[key2].returnValues[1]) + ' - ' + value[key2].returnValues[0] + "<br>"
+			arrAllLog.set(value[key2].returnValues[1], "moneySentSuccessfully" + ': ' + value[key2].returnValues[0]);
+		}
+		logRefresh();
+	}, (errorReason) => {});
+	anonimizer.getPastEvents('moneyRollback', options).then((value) => {
+	    for(let key3 in value){
+			//document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key3 + " : " + convertDateTimeToNormal(value[key3].returnValues[1]) + ' - ' + value[key3].returnValues[0] + "<br>"
+			arrAllLog.set(value[key3].returnValues[1], "moneyRollback" + ': ' + value[key3].returnValues[0]);
+		}
+		logRefresh();
+	}, (errorReason) => {});
+	anonimizer.getPastEvents('optionsChanged', options).then((value) => {
+	    for(let key4 in value){
+			//document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key4 + " : " + convertDateTimeToNormal(value[key4].returnValues[1]) + ' - ' + value[key4].returnValues[0] + "<br>";
+			arrAllLog.set(value[key4].returnValues[1], "optionsChanged" + ': ' + value[key4].returnValues[0]);
+		}
+		logRefresh();
+	}, (errorReason) => {});
+	anonimizer.getPastEvents('addItemToList', options).then((value) => {
+	    for(let key in value){
+			//document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + convertDateTimeToNormal(value[key].returnValues[1]) + ' - ' + value[key].returnValues[0] + "<br>"
+			arrAllLog.set(value[key].returnValues[2], "addItemToList" + ': state - ' + value[key].returnValues[3] + '. Amount - ' + value[key].returnValues[1] + '. ' + value[key].returnValues[0]);
+		}
+		logRefresh();
+	}, (errorReason) => {});	
+	anonimizer.getPastEvents('remItemFromMembersList', options).then((value) => {
+	    for(let key in value){
+			//document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + convertDateTimeToNormal(value[key].returnValues[1]) + ' - ' + value[key].returnValues[0] + "<br>"
+			arrAllLog.set(value[key].returnValues[2], "remItemFromMembersList" + ': ' + '. Amount - ' + value[key].returnValues[1] + '. ' + value[key].returnValues[0]);
+		}
+		logRefresh();
+	}, (errorReason) => {});			
 }
 
-
-
-
+//ownersMessages
 
 
 
@@ -194,6 +219,16 @@ anonimizer.getPastEvents('optionsChanged', options).then((value) => {
 // **************************************** // 
 // ********* вспомогательные функции******* //
 // *****************************начало***** //
+
+/////// обновление поля лога операций
+function logRefresh(){
+	// сортировка по дате нужна здесь!!!	
+	
+	document.getElementById('m-log-body').innerHTML = "";
+	for (let pair of arrAllLog.entries()) {
+		document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + convertDateTimeToNormal(pair[0]) + " - " + pair[1] + "<br>";
+	}
+}
 ///////получение даты разворачивания смартконтракта
 function convertDateToNormal(_timestamp){
 	if (_timestamp != 0){
@@ -295,7 +330,7 @@ return _str;
 // основная функциональность //
 // **************************************** //
  function startApp(){
-	var anonimizerAddress = "0x80Fa4E68804d5c0e52ccCed7FbB59EF4102b0f53";
+	var anonimizerAddress = "0x180b1F4baceb8f341c140aF2e44532bec732d0C6";
 	anonimizer = new web3js.eth.Contract(anonABI, anonimizerAddress);
 	getAllOptions();
 	getAllSuccess();
@@ -304,7 +339,7 @@ return _str;
 	getActiveWallet();   
 	getState();
 	getLog();
-   
+	getMessages();
 
    
    

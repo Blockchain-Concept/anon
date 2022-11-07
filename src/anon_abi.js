@@ -404,6 +404,19 @@ var anonABI = [
 	},
 	{
 		"inputs": [],
+		"name": "messageAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "optionsActual",
 		"outputs": [
 			{
