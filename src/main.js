@@ -1,5 +1,6 @@
  var web3js, anonimizer, _allSuccess, _allRollback, _birthdayService;
- var arrAllLog = new Map();  
+ var arrAllLog = new Map();
+ var arrAllLogMembersActivity = new Map();
  var _optionsActual = { 
         stateWaitIntervalTime:0, // = 1 days // 30мин и < 48 часов // время, которое даётся на отправку всеми участниками адресов для получения и подтверждений об отправке этих адресов (можно: seconds, minutes, hours, days, weeks and years)sendRecipient
         mixingQuantity:0, // = 1 эфир //размер перемешиваемого значения. Т.е. сумма, которая будет отправляться и получаться на кошельки участников
@@ -18,14 +19,20 @@
         changedDate:"", // дата и время последнего изменения
         needToActualize:0, // признак были ли использованы текущие плановые данные для изменения актуальных, или нет. false - настройки актуальны. true - запланировано изменение настроек и требуется актуализация
  };
+var _member = {
+        memberAddr:"", // адреса отправителей эфира/ для удаления: functions remove(uint index){sendersArray[index] = sendersArray[sendersArray.length - 1];sendersArray.pop();}
+        sentReceiveApprove:"", // подтверждение, что отправили с адресов для получения эфира комиссию
+    }
+ 
 // *********************************************** //
 // ********* основная функциональность *********** //
 // *********************************************** //
 //1) добавление нового участника и если это последний участник, то переход на новый этап (смена статуса, фиксация времени)
 function iWantMixETH(){
 	var _result;
-	alert("in metamask, use the wallet from which you will send money");
-	anonimizer.methods.iWantMixETH().send().then(_result = true, (errorReason) => {});
+	var _result2;
+	_result = confirm('Do you confirm that you want mix you ETH from actual metamask wallet?');
+	if (_result==true){alert('qqq');anonimizer.methods.iWantMixETH().send().then(_result2 = true, (errorReason) => {})};
 }
 
 //2) удаление самим участникам своего участия на первом этапе. И если участников не осталось, то вызов функции актуализации параметров changeActualOptions
@@ -68,6 +75,14 @@ function checkState(){
 	}	
 	return _result;
 }
+
+
+
+
+
+
+
+
 // **************************************** //
 // ********* функции статистики *********** //
 // ********************************начало** //
@@ -196,6 +211,10 @@ function getLog(){
 	    for(let key in value){
 			//document.getElementById('m-log-body').innerHTML = document.getElementById('m-log-body').innerHTML + key + " : " + convertDateTimeToNormal(value[key].returnValues[1]) + ' - ' + value[key].returnValues[0] + "<br>"
 			arrAllLog.set(value[key].returnValues[2], "addItemToList" + ': state - ' + value[key].returnValues[3] + '. Amount - ' + value[key].returnValues[1] + '. ' + value[key].returnValues[0]);
+			if (value[key].returnValues[0] = 'new sender added'){
+				arrAllLogMembersActivity.set(value[key].returnValues[2],"new activity");
+				refreshDateLastAddSender();
+			}
 		}
 		logRefresh();
 	}, (errorReason) => {});	
@@ -208,10 +227,28 @@ function getLog(){
 	}, (errorReason) => {});			
 }
 
-//ownersMessages
-
-
-
+function getSendersAmount() { 
+	anonimizer.methods.arraySendersAmount().call().then((value) => {
+		document.getElementById('senders').innerHTML = "";
+		for (let i=0; i< value; i++){
+			anonimizer.methods.arraySenders(i).call().then((value2) => {
+				_member = value2;
+				document.getElementById('senders').innerHTML = document.getElementById('senders').innerHTML + i + "). " + _member.memberAddr + "<br>";
+				}, (errorReason2) => {alert('444');});
+		}		
+	}, (errorReason) => {});
+return false;
+}
+function getReceiversAmount() { 
+	anonimizer.methods.arrayReceiversAmount().call().then((value) => {
+		for (let i=0; i< value; i++){
+			anonimizer.methods.arrayReceivers(i).call().then((value2) => {
+				document.getElementById('receivers').innerHTML = document.getElementById('m-mes-body').innerHTML + i + ") " +value2 + "<br>";
+				}, (errorReason2) => {alert('444');});
+		}		
+	}, (errorReason) => {});
+return false;
+}
 // *****************************окончание** // 
 // ********* функции статистики *********** //
 // **************************************** //
@@ -220,6 +257,12 @@ function getLog(){
 // ********* вспомогательные функции******* //
 // *****************************начало***** //
 
+/////// получение времени последнего добавления желающего перемешивать эфир
+function refreshDateLastAddSender(){
+	for (let pair of arrAllLogMembersActivity.entries()) {
+		document.getElementById('last_senders_date').innerHTML = convertDateTimeToNormal(pair[0]);
+	}
+}
 /////// обновление поля лога операций
 function logRefresh(){
 	// сортировка по дате нужна здесь!!!	
@@ -330,7 +373,7 @@ return _str;
 // основная функциональность //
 // **************************************** //
  function startApp(){
-	var anonimizerAddress = "0x180b1F4baceb8f341c140aF2e44532bec732d0C6";
+	var anonimizerAddress = "0xc4FB0C2c78eB664d6346A0c593b2E0310DA31f28";
 	anonimizer = new web3js.eth.Contract(anonABI, anonimizerAddress);
 	getAllOptions();
 	getAllSuccess();
@@ -340,11 +383,13 @@ return _str;
 	getState();
 	getLog();
 	getMessages();
-
+	getSendersAmount();
+	getReceiversAmount();
+    $(document).ready(function($){$('body').on("click",function(event){if (event.target.id=='senders_on'){iWantMixETH();}  });
    
    
    
-   
+});
    
    
  }

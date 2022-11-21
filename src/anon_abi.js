@@ -316,6 +316,19 @@ var anonABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "arrayReceiversAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -334,6 +347,19 @@ var anonABI = [
 				"internalType": "bool",
 				"name": "sentReceiveApprove",
 				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "arraySendersAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -408,7 +434,7 @@ var anonABI = [
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "_amount",
+				"name": "",
 				"type": "uint256"
 			}
 		],
